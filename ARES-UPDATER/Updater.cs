@@ -45,8 +45,14 @@ namespace ARES_UPDATER
                 cbVersions.Items.Add(item.Name);
             }
             cbVersions.SelectedIndex = 0;
+            if (!Directory.Exists(fileLocation + @"\GUI"))
+            {
+                Directory.CreateDirectory(fileLocation + @"\GUI");
+            }
+
             string application = SHA256CheckSum(guiLocation);
             string latestString = GetHashLatestAsync("https://raw.githubusercontent.com/Dean2k/A.R.E.S/main/VersionHashes/ARESGUI.txt");
+            
             if (application.ToLower() != latestString.ToLower())
             {
                 MessageBox.Show("Your ARES version is currently not upto date, please update to the latest version");
@@ -142,12 +148,15 @@ namespace ARES_UPDATER
 
         private static string GetHashLatestAsync(string url)
         {
-            string result;
-            using (HttpClient client = new HttpClient())
+            try
             {
-                result = client.GetStringAsync(url).Result;
-            }
-            return result;
+                string result;
+                using (HttpClient client = new HttpClient())
+                {
+                    result = client.GetStringAsync(url).Result;
+                }
+                return result;
+            } catch { return "Failed"; }
         }
 
         private void btnPatchNotes_Click(object sender, EventArgs e)
